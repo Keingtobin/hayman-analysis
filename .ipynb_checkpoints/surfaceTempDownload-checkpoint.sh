@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Change this path to target folder
-DOWNLOAD_DIR="$PWD/Temperature"
+DOWNLOAD_DIR="$PWD/data/Temperature"
 
 mkdir -p "$DOWNLOAD_DIR"
 

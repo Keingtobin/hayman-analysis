@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Change this path to target folder
+DOWNLOAD_DIR="$PWD/data/NDVI"
+
+mkdir -p "$DOWNLOAD_DIR"
+
 GREP_OPTIONS=''
 
 cookiejar=$(mktemp cookies.XXXXXXXXXX)
@@ -70,8 +75,12 @@ fetch_urls() {
 
         # Strip everything after '?'
         stripped_query_params="${filename%%\?*}"
-
-        curl -f -b "$cookiejar" -c "$cookiejar" -L --netrc-file "$netrc" -g -o $stripped_query_params -- $line && echo || exit_with_error "Command failed with error. Please retrieve the data manually."
+        output_path="$DOWNLOAD_DIR/$stripped_query_params"
+        if [ -f "$output_path" ]; then
+            echo "Skipping existing file: $output_path"
+            continue
+        fi
+        curl -f -b "$cookiejar" -c "$cookiejar" -L --netrc-file "$netrc" -g -o $output_path -- $line && echo || exit_with_error "Command failed with error. Please retrieve the data manually."
       done;
   elif command -v wget >/dev/null 2>&1; then
       # We can't use wget to poke provider server to get info whether or not URS was integrated without download at least one of the files.
@@ -87,7 +96,7 @@ fetch_urls() {
         # Strip everything after '?'
         stripped_query_params="${filename%%\?*}"
 
-        wget --load-cookies "$cookiejar" --save-cookies "$cookiejar" --output-document $stripped_query_params --keep-session-cookies -- $line && echo || exit_with_error "Command failed with error. Please retrieve the data manually."
+        wget --load-cookies "$cookiejar" --save-cookies "$cookiejar" --output-document $output_path --keep-session-cookies -- $line && echo || exit_with_error "Command failed with error. Please retrieve the data manually."
       done;
   else
       exit_with_error "Error: Could not find a command-line downloader.  Please install curl or wget"
