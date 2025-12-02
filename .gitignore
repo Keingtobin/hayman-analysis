@@ -1,5 +1,6 @@
 # Ignore the data folder that we're going to download everything into.
 data/
 Temperature/
+papers/
 cookies.*
 netrc.*
